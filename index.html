@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jiya Shah | Poet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Crimson+Text:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Crimson Text', serif; 
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0f1a 100%); 
+            color: #f0e6d2; 
+            line-height: 1.8; 
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Background Music */
+        audio {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            z-index: -1;
+        }
+        
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0f1a 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease-out;
+        }
+        .preloader.fade-out { opacity: 0; pointer-events: none; }
+        
+        .name-container { position: relative; display: flex; flex-direction: column; align-items: center; }
+        .name-svg { width: 650px; max-width: 90vw; height: 250px; filter: drop-shadow(0 0 30px #d4af37); }
+        .name-text { 
+            font-family: 'Dancing Script', cursive; font-size: 100px; font-weight: 700;
+            stroke: #d4af37; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+            fill: transparent; stroke-dasharray: 1200; stroke-dashoffset: 1200;
+            animation: writeName 4s ease-out forwards;
+        }
+        .underline-path {
+            stroke: #d4af37; stroke-width: 3; stroke-linecap: round;
+            stroke-dasharray: 520; stroke-dashoffset: 520; fill: transparent;
+            animation: drawLine 4.5s ease-out forwards;
+        }
+        @keyframes writeName { 0% { stroke-dashoffset: 1200; opacity: 0; } 50% { stroke-dashoffset: 0; opacity: 1; fill: transparent; } 100% { stroke-dashoffset: 0; fill: #d4af37; opacity: 1; } }
+        @keyframes drawLine { 0% { stroke-dashoffset: 520; opacity: 0; } 100% { stroke-dashoffset: 0; opacity: 1; } }
+
+        /* Main Content */
+        .main-content { display: none; }
+        .main-content.show { display: block; }
+        
+        section { padding: 100px 10%; max-width: 1200px; margin: 0 auto; }
+        h2 { font-family: 'Playfair Display', serif; font-size: 3rem; text-align: center; margin-bottom: 3rem; color: #d4af37; position: relative; }
+        h2::after { content: ''; display: block; width: 80px; height: 3px; background: #d4af37; margin: 1rem auto; }
+        .poem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .poem-card { background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(212,175,55,0.2); transition: transform 0.3s, box-shadow 0.3s; }
+        .poem-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(212,175,55,0.3); }
+        .poem-title { font-family: 'Playfair Display', serif; color: #d4af37; margin-bottom: 1.5rem; font-size: 1.5rem; text-align: center; }
+        .poem-text { font-style: italic; line-height: 2; text-align: left; font-size: 1.1rem; border-left: 4px solid #d4af37; padding-left: 1.5rem; margin: 1rem 0; }
+        .about-text { max-width: 800px; margin: 0 auto; text-align: center; font-style: italic; }
+        .about-text p { margin-bottom: 1.5rem; font-size: 1.1rem; }
+        
+        /* Styled Contact Section */
+        .contact { text-align: center; }
+        .contact h2 { margin-bottom: 2rem; }
+        .contact p { font-size: 1.2rem; margin-bottom: 2rem; }
+        .insta-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+        .insta-link { 
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: #d4af37; text-decoration: none; font-weight: bold; 
+            font-size: 1.3rem; padding: 1rem 2rem; 
+            background: rgba(212,175,55,0.1); border: 2px solid rgba(212,175,55,0.3);
+            border-radius: 50px; backdrop-filter: blur(10px);
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .insta-link::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .insta-link:hover::before { left: 100%; }
+        .insta-link:hover { 
+            background: rgba(212,175,55,0.2); border-color: #d4af37;
+            transform: translateY(-5px); box-shadow: 0 15px 30px rgba(212,175,55,0.4);
+            color: #f0e6d2;
+        }
+        .insta-icon { font-size: 1.5rem; }
+        
+        .music-toggle {
+            position: fixed; bottom: 20px; right: 20px;
+            background: rgba(212, 175, 55, 0.9); color: #0a0a0a;
+            border: none; border-radius: 50%; width: 50px; height: 50px;
+            font-size: 1.2rem; cursor: pointer; z-index: 1000;
+            transition: all 0.3s; backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+        }
+        .music-toggle:hover { transform: scale(1.1); background: #d4af37; }
+        .music-toggle.active { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212,175,55,0.7); } 70% { box-shadow: 0 0 0 10px rgba(212,175,55,0); } 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); } }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 10%;
+            color: rgba(240, 230, 210, 0.6);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(212,175,55,0.2);
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) { 
+            h2 { font-size: 2rem; } 
+            .name-svg { width: 90vw; height: 200px; } 
+            .name-text { font-size: 80px !important; } 
+            .poem-text { font-size: 1rem; }
+            .insta-links { flex-direction: column; align-items: center; gap: 1rem; }
+            .insta-link { font-size: 1.1rem; padding: 0.8rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Music (music.mp3 in same folder) -->
+    <audio autoplay loop volume="0.15" id="bgMusic">
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <button class="music-toggle active" id="musicToggle" title="Sade - Like a Tattoo">🎵</button>
+
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="name-container">
+            <svg class="name-svg" viewBox="0 0 700 250">
+                <text class="name-text" x="350" y="110" text-anchor="middle">Jiya Shah</text>
+                <path class="underline-path" d="M 120 140 Q 200 135 280 140 Q 350 145 420 140 T 580 140"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <section id="about">
+            <h2>About Jiya</h2>
+            <div class="about-text">
+                <p>Jiya Shah is a BA (Hons) student in Psychology, weaving profound insights from human behavior into her evocative poetry. Her verses capture the delicate dance between mind and soul.</p>
+                <p>With a keen interest in exploring the human psyche, Jiya transforms academic rigor into lyrical beauty. Her poems reflect the complexities of emotion, thought, and connection that define our existence.</p>
+                <p>Balancing her psychological studies with poetic expression, Jiya creates work that resonates deeply. Her writing bridges the academic and artistic, offering readers both intellectual stimulation and emotional catharsis.</p>
+                <p>As she continues her journey through psychology and poetry, Jiya invites you to explore the intersections of mind, heart, and verse that define her creative voice.</p>
+            </div>
+        </section>
+
+        <section id="poems">
+            <h2>Some of Jiya's selected poems & inspired songs</h2>
+            <div class="poem-grid">
+                <!-- Poem 1 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">RadhaKrishn</h3>
+                    <div class="poem-text">
+"आईने जैसा बिखरा हूँ। नैना उसके नदियों की धारा सी निरंतर निर्मल, मैं कागज़ की कश्ती सा कमज़ोर हूँ।<br>
+वह पूजा के पुष्प जैसी पवित्र प्रतिमा, मैं राधा के विरह में रंगा कान्हा सा हूँ। वह चाँद की चांदनी की तरह चमकती हुई, और मैं टिमटिमाते तारों सा तनहा हूँ।"
+                    </div>
+                </div>
+
+                <!-- Poem 2 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Drowned on Shore</h3>
+                    <div class="poem-text">
+"And when everything around me was alive,<br>
+The sea, the sky, and the storms that passed by,<br>
+I had already died a thousand deaths.<br>
+I sat down to see what the ocean could bring me,<br>
+The life of the sky, the soul of the sea.<br>
+But it only brought back memories of the days I wanted<br>
+no more,<br>
+The day I drowned even when I was standing on the shore."
+                    </div>
+                </div>
+
+                <!-- Poem 3 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Perfect-ish</h3>
+                    <div class="poem-text">
+"All or none. Everything or nothing at all.<br>
+In between this push and pull we forget to pause And take time to think about the cause,<br>
+Of why we always need it to be black or white, While there is more behind. Embrace those loose ends, hold them together,<br>
+They were ours, and will remain ours forever. However do not try to tie them up,<br>
+For they are meant to remain free, And you do not always have to be perfect, While you can simply be Perfectish."
+                    </div>
+                </div>
+
+                <!-- Poem 4 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Krishna's Many Forms</h3>
+                    <div class="poem-text">
+"नन्हे से नंदलाल है वह, छोटे से बाल गोपाल भी, धर्म के है रखवाले वह, और अधर्म के लिए काल भी। माखनचोर कहे सब उन्हें, और कहे उन्हें रणछोड़ भी, मुरली की मधुर धुन है वह, और सुदर्शन का क्रोध भी।<br><br>
+राधारानी का साथ है वह, प्रेम का सिखलाया पाठ है वह, अर्जुन को गीता का सार सुनाए जो, अर्थ का भी अर्थात है वह कृष्णा जो कृष्ण को पुकारे, उसके सखा फिर कैसे न आए, धर्म बचाने के लिए, महाभारत का पूरा इतिहास रचाए ।<br><br>
+जिसके मुख में पूरा संसार दिखे, जिसमें समाया पूरा ब्रह्मांड है, सृजन जिनसे हो इस सृष्टि का, उनका कोई अंत ना आरम्भ है। नारायण का दशावतार हो तुम, ब्रह्मा विष्णु महेश भी तुम वैकुंठ से लेकर वृंदावन तक, कुरुक्षेत्र और कैलाश भी तुम ।<br><br>
+त्रेता में माँ सीता के राम हो, द्वापर में माँ रुक्मिणी के श्याम भी, पार्थ के रथ के सारथी हो, और उसके गांडीव का बाण भी। कर्म भी तुम धर्म भी तुम, जीवन और मरण भी तुम, हर सुख दुख में जिसे याद करूं मैं, वह मेरा स्मरण भी तुम"
+                    </div>
+                </div>
+
+                <!-- Poem 5 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Quiet Missing</h3>
+                    <div class="poem-text">
+"You've gone away from me, A different world, a different city.<br>
+I live on with hopes of meeting again, Forget not someone's missing you quietly.<br>
+With me, a part of you will always stay, Even when we no longer meet everyday.<br>
+Warm hugs, the biggest smiles, And jokes that still make me laugh away.<br><br>
+Achieve your goals, reach new heights, Find your wings and take your flights.<br>
+I'll always be here praying for you, For your success and your spotlights.<br>
+When you were with me all these years, I knew you would be standing near.<br>
+My life feels like a stranger to me, Now that you are not present here.<br><br>
+The last few days before you went, The few moments together that we spent.<br>
+You were sitting right beside me, And yet, I missed you in that instant."
+                    </div>
+                </div>
+
+                <!-- Poem 6 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Monsoon Love</h3>
+                    <div class="poem-text">
+"The season of love has arrived, It's almost time we meet again.<br>
+Let the world hear a tale of love and longing, The immortal story of the ocean and the rain.<br>
+The scorching sun takes a part of me away, If only I could hide you and hold you tight.<br>
+But I cannot do that so I let you go, And wait for your return with the monsoon light.<br><br>
+I spend entire nights in your yearning, For you to come as dew in the morning.<br>
+Let the winds carry your essence back to me, Let me love you like the sky loves the sea.<br>
+Leave behind those star studded skies, Meet me at the horizon, accompany the sunrise.<br><br>
+The monsoon has arrived with your name in it, Tiny droplets fall on me as your love makes a visit.<br>
+Your pitter patter talks to me in the same whispers, As of my waves that recite the verse of our destiny.<br>
+My pain turns into poetry when you drench the earth, Flow down and join the rivers to merge with me."
+                    </div>
+                </div>
+
+                <!-- Poem 7 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">I Found Myself</h3>
+                    <div class="poem-text">
+"Hiding from your darkness, I found my own light.<br>
+Even if it was only a flicker, I just became my own guide.<br>
+You pushed me down far enough, That I had no choice but to rise.<br>
+I picked up my own broken pieces, And stitched a new better disguise.<br><br>
+I found a way back to me, The day your presence left.<br>
+In the process of losing you, I am glad I found myself back."
+                    </div>
+                </div>
+
+                <!-- Poem 8 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Persistence is the Key</h3>
+                    <div class="poem-text">
+"Failure and Success are two sides of the same coin.<br>
+What changes the result is the number of times you are willing to flip the coin until it lands in the favour of success."
+                    </div>
+                </div>
+
+                <!-- Poem 9 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Ocean Eyes</h3>
+                    <div class="poem-text">
+"You are the light of the afternoon sun, The glow that sets my life ablaze.<br>
+Your eyes alone shine brighter than, The moon on its brightest days.<br>
+Tonight as I sit beside her, I gaze into her pretty eyes.<br>
+They make my heart flutter, A garden full of butterflies.<br><br>
+Her soft eyes, deep as the ocean, Holds love that washes over me in waves.<br>
+I drown in them every time I take a look, A longer gaze from her, my heart craves.<br>
+I have had this dream before, I confess to her with rehearsed lines.<br>
+In reality, how do I even frame my words, I question myself a thousand times."
+                    </div>
+                </div>
+
+                <!-- Poem 10 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Paint Me Alive</h3>
+                    <div class="poem-text">
+"Splatter your colours on me, Paint my entirety in them.<br>
+Let my body, heart and soul, Have your sparkle of a gem.<br>
+I will even bathe in the water, You wash your paintbrushes in.<br>
+Just to mix in with your art, If that is what it means.<br><br>
+The ocean changes its shades, To match with that of the sky.<br>
+I wish to be seen in your colours, And change, therefore, so do I.<br>
+The setting sun coats the blue, With red, orange, and pink hues.<br>
+And like the dying sun does, Your love paints me alive too."
+                    </div>
+                </div>
+
+                <!-- Poem 11 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Two Hearts, One Beat</h3>
+                    <div class="poem-text">
+"You are the one for me, I am the one for you.<br>
+Two hearts, two beats, In sync for the love that is true.<br>
+I stitch my thoughts with yours, I intertwine our fates into one.<br>
+You are the only thing running on my mind, And my love for you can't be undone.<br><br>
+My world begins and ends with you, Anything else makes no sense to me.<br>
+Others can keep the earth, the skies, A part of me is all I want for you to be.<br>
+I roam around in circles, Aimlessly wander away.<br>
+I pull the strings of destiny, To meet you in one or the other way.<br><br>
+You are the one for me, I am the one for you.<br>
+Two hearts, one beat, Already in sync for the love that is true."
+                    </div>
+                </div>
+
+                <!-- Poem 12 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">I Haven't Left</h3>
+                    <div class="poem-text">
+"I haven't left. Just simply gone. Look closely, look around.<br>
+I am in all the things you love, The earth below, the skies above.<br>
+I forever reside in all those rains, That come to wipe away your tears.<br>
+I wrap myself in all of sunlight, To chase away your darkest fears.<br><br>
+Listen to me with your heart, For I come along with the winds.<br>
+I may whisper, I may sing, I may say nothing at all.<br>
+Listen to me still. Because every time you feel,<br>
+The breeze against your cheek, Know that I have placed a kiss.<br><br>
+I live on with every breath you take, I live in your dreams till I am awake.<br>
+Then as I start to slowly fade away, I ask for you to carry a part of me everyday."
+                    </div>
+                </div>
+
+                <!-- Poem 13 -->
+                <div class="poem-card">
+                    <h3 class="poem-title">Our Story</h3>
+                    <div class="poem-text">
+"किताबों के पन्ने हमारे सपनो ने भर दिए, अब इतिहास के पन्नों पर अपनी कहानी लिखनी है।<br>
+जीत हासिल करने जो चल पड़े थे हम, अब ज़िंदगी में वह सफलता अपने नाम करनी है।"
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Updated Styled Contact Section -->
+        <section id="contact" class="contact">
+            <h2>Connect</h2>
+            <p>Follow Jiya's poetic journey on Instagram</p>
+            <div class="insta-links">
+                <a href="https://www.instagram.com/poetry_dil_se_/" target="_blank" class="insta-link" rel="noopener noreferrer">
+                    <span class="insta-icon">📸</span> @poetry_dil_se_
+                </a>
+                <a href="https://www.instagram.com/jiya.shah07/" target="_blank" class="insta-link" rel="noopener noreferrer">
+                    <span class="insta-icon">📸</span> @jiya.shah07
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Thank you for reading ✨<br>
+        <small>made by dhairya</small>
+    </div>
+
+    <script>
+        const audio = document.getElementById('bgMusic');
+        const toggle = document.getElementById('musicToggle');
+        
+        audio.volume = 0.15;
+        audio.play();
+        
+        toggle.onclick = () => {
+            if (audio.paused) {
+                audio.play();
+                toggle.textContent = '🎵';
+                toggle.classList.add('active');
+            } else {
+                audio.pause();
+                toggle.textContent = '🔇';
+                toggle.classList.remove('active');
+            }
+        };
+        
+        setTimeout(() => {
+            document.getElementById('preloader').classList.add('fade-out');
+            document.getElementById('mainContent').classList.add('show');
+        }, 5000);
+    </script>
+</body>
+</html>
